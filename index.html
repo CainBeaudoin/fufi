@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>FUFI Fulfillment Demo</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="ops-enhancements.css" />
 </head>
@@ -22,7 +23,7 @@
       <section class="view active" id="customer">
         <div class="hero">
           <div><span class="eyebrow">Customer experience</span><h1>Ship from your vault.</h1><p>Select your items, confirm where they are going, pay one simple shipping price in cash, then track the shipment through delivery.</p></div>
-          <div class="order-badge"><span>Order</span><strong>FU-10482</strong></div>
+          <div class="order-badge hidden" id="customerOrderBadge"><span>Order</span><strong>FU-10482</strong></div>
         </div>
 
         <div class="layout customer-layout">
@@ -129,5 +130,6 @@
   <div id="toast" class="toast"></div>
   <script src="app.js"></script>
   <script src="ops-enhancements.js"></script>
+  <script src="customer-order-ui.js"></script>
 </body>
 </html>
