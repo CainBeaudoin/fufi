@@ -119,4 +119,9 @@
   observer.observe(document.getElementById('ops') || document.body,{subtree:true,childList:true,characterData:true});
 
   renderList();
+
+  const complianceScript = document.createElement('script');
+  complianceScript.src = 'compliance.js';
+  complianceScript.defer = true;
+  document.body.appendChild(complianceScript);
 })();
