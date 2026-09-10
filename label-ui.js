@@ -10,7 +10,6 @@
   const costs = section.querySelector('.costs');
   const carrier = document.getElementById('labelCarrier');
   const service = document.getElementById('labelService');
-  const tracking = document.getElementById('labelTracking');
   if (!grid || !costs) return;
 
   const style = document.createElement('style');
@@ -19,8 +18,8 @@
     #labelSection .label-grid { grid-template-columns:1fr !important; gap:14px !important; }
     #labelSection .label-service-summary {
       display:grid;
-      grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr);
-      gap:12px;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
       margin-bottom:2px;
     }
     #labelSection .label-service-summary > div {
@@ -46,16 +45,13 @@
       line-height:1.35;
       overflow-wrap:anywhere;
     }
-    #labelSection .label-service-summary .label-tracking-summary.is-pending {
-      color:#767e8a;
-      font-weight:600;
-    }
     #labelSection .costs {
       display:grid !important;
       grid-template-columns:repeat(4,minmax(0,1fr));
       gap:10px !important;
     }
     #labelSection .costs > div {
+      min-width:0;
       background:#0c0e12;
       border:1px solid #252a32 !important;
       border-radius:10px;
@@ -65,18 +61,32 @@
       align-items:flex-start !important;
       gap:5px !important;
     }
-    #labelSection .costs > div span { font-size:10px; text-transform:uppercase; letter-spacing:.07em; }
-    #labelSection .costs > div strong { font-size:14px; }
+    #labelSection .costs > div span {
+      font-size:10px;
+      text-transform:uppercase;
+      letter-spacing:.07em;
+    }
+    #labelSection .costs > div strong {
+      font-size:14px;
+      text-align:left;
+      overflow-wrap:anywhere;
+    }
     #labelSection .costs .primary,
     #labelSection .costs .secondary {
       grid-column:1/-1;
       width:100%;
     }
+    #labelSection .label-step-note {
+      margin:0 0 12px;
+      color:#737b87;
+      font-size:11px;
+      line-height:1.5;
+    }
     @media (max-width:860px) {
-      #labelSection .label-service-summary { grid-template-columns:1fr; }
       #labelSection .costs { grid-template-columns:1fr 1fr; }
     }
     @media (max-width:560px) {
+      #labelSection .label-service-summary,
       #labelSection .costs { grid-template-columns:1fr; }
     }
   `;
@@ -84,30 +94,34 @@
 
   if (preview) preview.setAttribute('aria-hidden', 'true');
 
+  const heading = section.querySelector('.panel-head h2');
+  if (heading) heading.textContent = 'Buy label';
+
+  if (!section.querySelector('.label-step-note')) {
+    const note = document.createElement('p');
+    note.className = 'label-step-note';
+    note.textContent = 'Confirm the selected service and postage, then purchase the label. Tracking appears in the next step after purchase.';
+    section.querySelector('.panel-head')?.after(note);
+  }
+
   const summary = document.createElement('div');
   summary.className = 'label-service-summary';
   summary.innerHTML = `
-    <div><span>Carrier</span><strong class="label-carrier-summary">—</strong></div>
-    <div><span>Service</span><strong class="label-service-name-summary">—</strong></div>
-    <div><span>Tracking</span><strong class="label-tracking-summary is-pending">Pending until label purchase</strong></div>`;
+    <div><span>Carrier</span><strong class="label-carrier-summary">Select a carrier</strong></div>
+    <div><span>Service</span><strong class="label-service-name-summary">—</strong></div>`;
   grid.insertBefore(summary, costs);
 
   const carrierSummary = summary.querySelector('.label-carrier-summary');
   const serviceSummary = summary.querySelector('.label-service-name-summary');
-  const trackingSummary = summary.querySelector('.label-tracking-summary');
 
   function sync() {
     const carrierValue = carrier?.textContent?.trim() || '—';
     const serviceValue = service?.textContent?.trim() || '—';
-    const trackingValue = tracking?.textContent?.trim() || '';
     carrierSummary.textContent = /^(carrier|—)$/i.test(carrierValue) ? 'Select a carrier' : carrierValue;
     serviceSummary.textContent = /^(service|—)$/i.test(serviceValue) ? '—' : serviceValue;
-    const pending = !trackingValue || /pending|—/i.test(trackingValue);
-    trackingSummary.textContent = pending ? 'Pending until label purchase' : trackingValue;
-    trackingSummary.classList.toggle('is-pending', pending);
   }
 
-  [carrier, service, tracking].filter(Boolean).forEach((node) => {
+  [carrier, service].filter(Boolean).forEach((node) => {
     new MutationObserver(sync).observe(node, { childList:true, characterData:true, subtree:true });
   });
   sync();
