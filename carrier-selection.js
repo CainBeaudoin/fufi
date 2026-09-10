@@ -26,6 +26,19 @@
       background: rgba(67, 214, 118, .09) !important;
       box-shadow: 0 0 0 1px rgba(84,232,135,.22), 0 8px 24px rgba(0,0,0,.22);
     }
+    #opsRates .ops-rate > div:first-child {
+      min-width: 0;
+      align-content: flex-start;
+    }
+    #opsRates .ops-rate > div:first-child > strong,
+    #opsRates .ops-rate > div:first-child > small {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    #opsRates .ops-rate .tag {
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
     .carrier-choice-indicator {
       position: absolute;
       left: 18px;
@@ -62,24 +75,46 @@
       background: #54e887;
       transform: scale(1);
     }
-    #opsRates .ops-rate.selected::after {
-      content: 'Selected';
-      position: absolute;
-      top: 10px;
-      right: 12px;
+    .carrier-selected-label {
+      display: none;
+      flex-basis: 100%;
+      width: max-content;
+      margin-top: 3px;
+      padding: 3px 6px;
+      border-radius: 999px;
+      background: rgba(84,232,135,.10);
+      border: 1px solid rgba(84,232,135,.28);
+      color: #79ef9f;
       font-size: 9px;
       font-weight: 800;
       letter-spacing: .06em;
+      line-height: 1.2;
       text-transform: uppercase;
-      color: #79ef9f;
+      white-space: nowrap;
+    }
+    #opsRates .ops-rate.selected .carrier-selected-label {
+      display: inline-flex;
     }
     #opsRatesSection .ux-auto-note {
       margin-bottom: 12px;
       color: #9b9da5;
     }
+    @media (max-width: 900px) {
+      #opsRates .ops-rate {
+        grid-template-columns: minmax(0,1.4fr) minmax(100px,.8fr) minmax(140px,1fr) auto;
+        gap: 12px;
+      }
+    }
     @media (max-width: 720px) {
-      #opsRates .ops-rate { padding-left: 46px !important; }
+      #opsRates .ops-rate {
+        padding-left: 46px !important;
+        grid-template-columns: 1fr;
+        gap: 9px;
+      }
       .carrier-choice-indicator { left: 14px; }
+      #opsRates .ops-price-stack {
+        align-items: flex-start;
+      }
     }
   `;
   document.head.appendChild(style);
@@ -99,6 +134,16 @@
         indicator.setAttribute('aria-hidden', 'true');
         button.appendChild(indicator);
       }
+
+      const carrierInfo = button.querySelector(':scope > div:first-child');
+      if (carrierInfo && !carrierInfo.querySelector('.carrier-selected-label')) {
+        const selectedLabel = document.createElement('span');
+        selectedLabel.className = 'carrier-selected-label';
+        selectedLabel.textContent = 'Selected';
+        selectedLabel.setAttribute('aria-hidden', 'true');
+        carrierInfo.appendChild(selectedLabel);
+      }
+
       button.setAttribute('aria-pressed', button.classList.contains('selected') ? 'true' : 'false');
     });
   }
