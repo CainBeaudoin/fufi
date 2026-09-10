@@ -122,5 +122,6 @@
   loadScript('ux-simplify.js')
     .then(() => loadScript('currency-policy.js'))
     .then(() => loadScript('carrier-selection.js'))
-    .then(() => loadScript('tracking-ui.js'));
+    .then(() => loadScript('tracking-ui.js'))
+    .then(() => loadScript('label-ui.js'));
 })();
