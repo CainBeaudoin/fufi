@@ -110,14 +110,10 @@
     <section class="sam-architecture">
       <div class="sam-section-head"><div><span class="step">02</span><h2>How Sam should implement it</h2></div></div>
       <div class="architecture-flow">
-        <div><span>1</span><strong>Shipping settings</strong><p>Hard blacklist + dynamic service-area rules.</p></div>
-        <b>→</b>
-        <div><span>2</span><strong>Eligibility engine</strong><p>Destination, item, value, address and customs checks.</p></div>
-        <b>→</b>
-        <div><span>3</span><strong>Rate adapters</strong><p>Normalize Chit Chats, Purolator, UPS, FedEx, DHL and Canada Post.</p></div>
-        <b>→</b>
-        <div><span>4</span><strong>Customer flat price</strong><p>Best eligible rate + configured cushion. Cash only.</p></div>
-        <b>→</b>
+        <div><span>1</span><strong>Shipping settings</strong><p>Hard blacklist + dynamic service-area rules.</p></div><b>→</b>
+        <div><span>2</span><strong>Eligibility engine</strong><p>Destination, item, value, address and customs checks.</p></div><b>→</b>
+        <div><span>3</span><strong>Rate adapters</strong><p>Normalize Chit Chats, Purolator, UPS, FedEx, DHL and Canada Post.</p></div><b>→</b>
+        <div><span>4</span><strong>Customer flat price</strong><p>Best eligible rate + configured cushion. Cash only.</p></div><b>→</b>
         <div><span>5</span><strong>Ops choice</strong><p>Re-rate after packing and select the actual carrier.</p></div>
       </div>
       <pre class="sam-code">shippable = !hardBlacklisted
@@ -128,13 +124,8 @@
     </section>
 
     <section class="blacklist-panel">
-      <div class="blacklist-head">
-        <div><span class="eyebrow">Launch policy</span><h2>Platform destination blacklist</h2><p>These are recommended hard exclusions for launch because reliable consumer fulfillment is either suspended or disproportionately complex across the carrier stack.</p></div>
-        <span class="blacklist-count">${hardBlacklist.length} hard blocked</span>
-      </div>
-      <div class="blacklist-grid">
-        ${hardBlacklist.map((country) => `<div class="blacklist-country"><strong>${country.name}</strong><p>${country.reason}</p></div>`).join('')}
-      </div>
+      <div class="blacklist-head"><div><span class="eyebrow">Launch policy</span><h2>Platform destination blacklist</h2><p>These are recommended hard exclusions for launch because reliable consumer fulfillment is either suspended or disproportionately complex across the carrier stack.</p></div><span class="blacklist-count">${hardBlacklist.length} hard blocked</span></div>
+      <div class="blacklist-grid">${hardBlacklist.map((country) => `<div class="blacklist-country"><strong>${country.name}</strong><p>${country.reason}</p></div>`).join('')}</div>
       <div class="monitor-row"><span>Dynamic suspension / manual review</span><p>${monitorList.join(' · ')}</p></div>
       <p class="blacklist-disclaimer">Do not treat the monitor list as a permanent platform blacklist. Carrier availability changes quickly. Check live serviceability before returning a rate.</p>
     </section>
@@ -163,4 +154,14 @@
     samTab.classList.add('active');
     samView.classList.add('active');
   });
+
+  const archiveStyle = document.createElement('link');
+  archiveStyle.rel = 'stylesheet';
+  archiveStyle.href = 'archive.css';
+  document.head.appendChild(archiveStyle);
+
+  const archiveScript = document.createElement('script');
+  archiveScript.src = 'archive.js';
+  archiveScript.defer = true;
+  document.body.appendChild(archiveScript);
 })();
