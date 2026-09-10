@@ -2,7 +2,7 @@
   if (window.__fufiRoutingPolicyLoaded) return;
   window.__fufiRoutingPolicyLoaded = true;
 
-  // Operational routing policy:
+  // Demo prices use USD as the platform base currency.
   // Canada -> Chit Chats / Canada Post / Purolator / UPS
   // U.S. -> Chit Chats first, then UPS / FedEx / DHL
   // Overseas -> DHL / FedEx / UPS / Purolator only
@@ -99,7 +99,6 @@
 
     const research = sam.querySelector('.sam-sources > p');
     if (research) research.innerHTML = '<strong>Operational policy:</strong> Chit Chats is for Canada/U.S.; Canada Post is a Canadian fallback. Based on warehouse experience, neither should be used for overseas international orders where delay risk can cause missed deadlines. Overseas routing should prioritize DHL, FedEx and UPS, with Purolator considered only when the lane is competitive.';
-
     return true;
   }
 
@@ -110,8 +109,17 @@
     observer.observe(document.body, { childList: true, subtree: true });
   }
 
-  const uxScript = document.createElement('script');
-  uxScript.src = 'ux-simplify.js';
-  uxScript.defer = true;
-  document.body.appendChild(uxScript);
+  function loadScript(src) {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = resolve;
+      script.onerror = resolve;
+      document.body.appendChild(script);
+    });
+  }
+
+  loadScript('ux-simplify.js')
+    .then(() => loadScript('currency-policy.js'))
+    .then(() => loadScript('carrier-selection.js'));
 })();
