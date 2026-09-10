@@ -120,8 +120,10 @@
 
   renderList();
 
-  const complianceScript = document.createElement('script');
-  complianceScript.src = 'compliance.js';
-  complianceScript.defer = true;
-  document.body.appendChild(complianceScript);
+  ['routing-policy.js', 'queue-filters.js', 'compliance.js'].forEach((src) => {
+    const script = document.createElement('script');
+    script.src = src;
+    script.defer = true;
+    document.body.appendChild(script);
+  });
 })();
