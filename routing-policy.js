@@ -98,7 +98,18 @@
     });
 
     const research = sam.querySelector('.sam-sources > p');
-    if (research) research.innerHTML = '<strong>Operational policy:</strong> Chit Chats is for Canada/U.S.; Canada Post is a Canadian fallback. Based on warehouse experience, neither should be used for overseas international orders where delay risk can cause missed deadlines. Overseas routing should prioritize DHL, FedEx and UPS, with Purolator considered only when the lane is competitive.';
+    if (research) research.innerHTML = '<strong>Operational policy:</strong> Chit Chats is for Canada/U.S.; Canada Post is a Canadian fallback. Based on warehouse experience, neither should be used for overseas international orders where delay risk can cause missed deadlines. Overseas routing should prioritize DHL, FedEx and UPS, with Purolator considered only when the lane is competitive.<br><br><strong>Tracking updates:</strong> If we need a carrier-agnostic tracking layer, ParcelsApp can be used as an optional integration to consolidate shipment updates across supported carriers and linked tracking numbers.';
+
+    const sourceLinks = sam.querySelector('.sam-sources .source-links');
+    if (sourceLinks && !sourceLinks.querySelector('a[data-parcelsapp-tracking]')) {
+      const link = document.createElement('a');
+      link.href = 'https://parcelsapp.com/developers/docs';
+      link.target = '_blank';
+      link.rel = 'noreferrer';
+      link.dataset.parcelsappTracking = '1';
+      link.textContent = 'ParcelsApp tracking API';
+      sourceLinks.appendChild(link);
+    }
     return true;
   }
 
