@@ -21,15 +21,14 @@ body.ops-shell-active main{height:100%;min-height:0;overflow:hidden}
 body.ops-shell-active #ops.view.active{
   height:100%;
   min-height:0;
-  padding-top:24px;
-  padding-bottom:20px;
+  padding-top:12px;
+  padding-bottom:14px;
   display:flex;
   flex-direction:column;
   overflow:hidden;
 }
 body.ops-shell-active #ops>.hero{
-  flex:0 0 auto;
-  margin-bottom:18px!important;
+  display:none!important;
 }
 body.ops-shell-active #ops>.ops-layout{
   flex:1 1 auto;
@@ -55,7 +54,7 @@ body.ops-shell-active #ops .queue .archive-pane{
   scrollbar-gutter:stable;
 }
 
-/* Right workspace scrolls independently while the Ops summary remains fixed. */
+/* Right workspace scrolls independently while the Ops chrome remains fixed. */
 body.ops-shell-active #ops .ops-layout>.stack{
   height:100%;
   min-height:0;
@@ -64,7 +63,7 @@ body.ops-shell-active #ops .ops-layout>.stack{
   overscroll-behavior:contain;
   scrollbar-gutter:stable;
   padding-right:7px;
-  padding-bottom:20px;
+  padding-bottom:14px;
 }
 body.ops-shell-active #ops .ops-layout>.stack::-webkit-scrollbar,
 body.ops-shell-active #ops .queue .queue-pane::-webkit-scrollbar,
@@ -87,7 +86,7 @@ body.ops-shell-active #ops .queue .archive-pane::-webkit-scrollbar-track{backgro
   body.ops-shell-active{overflow:auto;height:auto}
   body.ops-shell-active .app,
   body.ops-shell-active main{height:auto;overflow:visible}
-  body.ops-shell-active #ops.view.active{height:auto;overflow:visible;display:block}
+  body.ops-shell-active #ops.view.active{height:auto;overflow:visible;display:block;padding-top:16px}
   body.ops-shell-active #ops>.ops-layout{height:auto;overflow:visible}
   body.ops-shell-active #ops .queue{height:auto;max-height:620px!important}
   body.ops-shell-active #ops .ops-layout>.stack{height:auto;overflow:visible;padding-right:0;padding-bottom:0}
