@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>FUFI Fulfillment Demo</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="ops-enhancements.css" />
 </head>
 <body>
   <div class="app">
@@ -83,13 +84,30 @@
       </section>
 
       <section class="view" id="ops">
-        <div class="hero"><div><span class="eyebrow">Toronto fulfillment operations</span><h1>Pack, rate, label, dispatch.</h1><p>The customer pays one locked shipping charge. Ops weighs the real parcel, compares eligible services, then chooses the actual carrier.</p></div><div class="kpis"><div><span>Open</span><strong id="openKpi">0</strong></div><div><span>Ready</span><strong id="readyKpi">0</strong></div><div><span>Shipped</span><strong id="shippedKpi">0</strong></div></div></div>
+        <div class="hero"><div><span class="eyebrow">Toronto fulfillment operations</span><h1>Pack, rate, label, dispatch.</h1><p>The customer pays one locked shipping charge. Ops weighs the real parcel, compares eligible services, then chooses the actual carrier.</p></div><div class="kpis"><div><span>Open</span><strong id="openKpi">5</strong></div><div><span>Ready</span><strong id="readyKpi">2</strong></div><div><span>Shipped</span><strong id="shippedKpi">18</strong></div></div></div>
 
         <div class="layout ops-layout">
-          <aside class="panel queue"><div class="panel-head"><div><span class="step">QUEUE</span><h2>Requests</h2></div></div><div id="queueEmpty" class="empty"><strong>No active request</strong><p>Complete the customer flow first.</p></div><button id="queueOrder" class="queue-order hidden"><div><strong>FU-10482</strong><span class="chip warning" id="queueStatus">New</span></div><span id="queueCustomer">Alex Morgan</span><small id="queueSummary">—</small><small id="queueDestination">—</small></button></aside>
+          <aside class="panel queue">
+            <div class="panel-head"><div><span class="step">QUEUE</span><h2>Requests</h2></div><span class="chip muted">Toronto hub</span></div>
+            <div id="queueEmpty" class="empty hidden"><strong>No active request</strong><p>Complete the customer flow first.</p></div>
+            <div class="queue-section-label"><span>Pending fulfillment</span><strong>5 open</strong></div>
+            <div class="queue-list">
+              <button id="queueOrder" class="queue-order live-order hidden"><div><strong>FU-10482</strong><span class="chip warning" id="queueStatus">New</span></div><span id="queueCustomer">Alex Morgan</span><small id="queueSummary">—</small><div class="queue-order__bottom"><small id="queueDestination">—</small><small>Now</small></div></button>
+
+              <button class="queue-order mock-order" type="button"><div><strong>FU-10477</strong><span class="chip warning">Packing</span></div><span>Priya Shah</span><small>Heavyweight Hoodie · C$59.40 shipping</small><div class="queue-order__bottom"><small>Dubai, UAE</small><small>8m</small></div></button>
+
+              <button class="queue-order mock-order" type="button"><div><strong>FU-10475</strong><span class="chip muted">New</span></div><span>Jordan Lee</span><small>Jordan 1 High · C$19.80 shipping</small><div class="queue-order__bottom"><small>Brooklyn, NY, USA</small><small>14m</small></div></button>
+
+              <button class="queue-order mock-order" type="button"><div><strong>FU-10471</strong><span class="chip success">Ready</span></div><span>Maya Chen</span><small>2 items · C$18.25 shipping</small><div class="queue-order__bottom"><small>Vancouver, BC, Canada</small><small>22m</small></div></button>
+
+              <button class="queue-order mock-order" type="button"><div><strong>FU-10469</strong><span class="chip warning">Packing</span></div><span>Oliver Grant</span><small>Heavyweight Hoodie · C$43.90 shipping</small><div class="queue-order__bottom"><small>London, United Kingdom</small><small>31m</small></div></button>
+
+              <button class="queue-order mock-order" type="button"><div><strong>FU-10463</strong><span class="chip muted">New</span></div><span>Haruto Sato</span><small>Jordan 1 High · C$47.65 shipping</small><div class="queue-order__bottom"><small>Tokyo, Japan</small><small>48m</small></div></button>
+            </div>
+          </aside>
 
           <div class="stack">
-            <section class="panel empty ops-placeholder" id="opsPlaceholder"><strong>Waiting for a fulfillment request</strong><p>Switch to Customer, choose items, calculate shipping and pay the cash shipping charge.</p></section>
+            <section class="panel empty ops-placeholder" id="opsPlaceholder"><strong>Waiting for the demo customer request</strong><p>The queue already contains other pending fulfillment orders. Complete the Customer flow to add FU-10482 and work through it in this demo.</p></section>
             <div id="opsOrder" class="stack hidden">
               <section class="panel"><div class="ops-title"><div><span class="eyebrow">Order FU-10482</span><h2 id="opsName">Alex Morgan</h2><p id="opsDestination">—</p></div><span class="chip warning" id="opsStatus">New request</span></div><div class="meta-row"><div><span>Customer shipping charge</span><strong id="opsRequestedPrice">—</strong></div><div><span>Payment</span><strong>Cash · Paid</strong></div><div><span>Origin</span><strong>Toronto, ON</strong></div></div></section>
 
@@ -110,5 +128,6 @@
   </div>
   <div id="toast" class="toast"></div>
   <script src="app.js"></script>
+  <script src="ops-enhancements.js"></script>
 </body>
 </html>
