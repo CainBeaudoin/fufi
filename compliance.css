@@ -1,0 +1,139 @@
+/* Customs and insurance are operational data, not customer merchandising data. */
+#customer .odto-product-card > b,
+#customer .package-preview > div:nth-child(3) {
+  display: none !important;
+}
+
+#customer .package-preview {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.compliance-panel {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid #2d3035;
+  border-radius: 14px;
+  background: #111316;
+}
+
+.compliance-panel__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.compliance-panel__head > div { min-width: 0; }
+.compliance-panel__head h3 { margin: 4px 0 5px; font-size: 16px; }
+.compliance-panel__head p { margin: 0; color: #868991; font-size: 12px; line-height: 1.55; }
+
+.compliance-badge {
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: rgba(101, 213, 137, .10);
+  color: #81eaa4;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.compliance-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.compliance-metric {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #272a2f;
+  border-radius: 10px;
+  background: #15171b;
+}
+
+.compliance-metric span {
+  display: block;
+  margin-bottom: 6px;
+  color: #737780;
+  font-size: 9px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.compliance-metric strong {
+  display: block;
+  font-size: 12px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.compliance-status-good { color: #79e39b; }
+.compliance-status-warn { color: #f1be68; }
+
+.compliance-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.compliance-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(110px, .7fr) minmax(120px, .7fr);
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid #272a2f;
+  border-radius: 10px;
+  background: #121418;
+  font-size: 11px;
+}
+
+.compliance-item > * { min-width: 0; overflow-wrap: anywhere; }
+.compliance-item span { color: #858992; }
+.compliance-item strong { font-size: 11px; }
+
+.compliance-note {
+  margin: 12px 0 0;
+  padding: 11px 12px;
+  border-left: 3px solid #44505d;
+  background: #14171b;
+  color: #9498a0;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.compliance-note strong { color: #e5e7eb; }
+.compliance-note--legal { border-left-color: #5aa975; }
+
+.compliance-insurance-table {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.compliance-insurance-table div {
+  padding: 10px;
+  border-radius: 9px;
+  background: #17191d;
+  border: 1px solid #25282d;
+}
+
+.compliance-insurance-table span { display: block; color: #777b84; font-size: 9px; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 5px; }
+.compliance-insurance-table strong { font-size: 11px; line-height: 1.4; }
+
+@media (max-width: 1100px) {
+  .compliance-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 680px) {
+  #customer .package-preview { grid-template-columns: 1fr !important; }
+  .compliance-panel__head { flex-direction: column; }
+  .compliance-grid,
+  .compliance-insurance-table,
+  .compliance-item { grid-template-columns: 1fr; }
+}
