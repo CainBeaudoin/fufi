@@ -20,7 +20,7 @@
     <main>
       <section class="view active" id="customer">
         <div class="hero">
-          <div><span class="eyebrow">Customer experience</span><h1>Ship from your vault.</h1><p>Select items, confirm the destination, compare available services, and follow the shipment through delivery.</p></div>
+          <div><span class="eyebrow">Customer experience</span><h1>Ship from your vault.</h1><p>Select your items, confirm where they are going, pay one simple shipping price in cash, then track the shipment through delivery.</p></div>
           <div class="order-badge"><span>Order</span><strong>FU-10482</strong></div>
         </div>
 
@@ -43,57 +43,63 @@
                 <label>City<input name="city" value="Toronto" /></label>
                 <label>Province / State<input name="region" value="ON" /></label>
                 <label>Postal / ZIP<input name="postal" value="M5X 1A9" /></label>
-                <label>Country<select name="country"><option value="CA">Canada</option><option value="US">United States</option><option value="GB">United Kingdom</option><option value="DE">Germany</option><option value="FR">France</option><option value="AU">Australia</option><option value="JP">Japan</option></select></label>
+                <label>Country<select name="country"><option value="CA">Canada</option><option value="US">United States</option><option value="AE">United Arab Emirates</option><option value="GB">United Kingdom</option><option value="DE">Germany</option><option value="FR">France</option><option value="AU">Australia</option><option value="JP">Japan</option></select></label>
                 <label class="wide">Phone<input name="phone" value="+1 416 555 0134" /></label>
-                <div class="wide form-foot"><p id="destinationMessage">Destination will be checked against shipping rules and carrier serviceability.</p><button class="primary">Check shipping options</button></div>
+                <div class="wide form-foot"><p id="destinationMessage">We check the destination against shipping rules and available Toronto-origin services.</p><button class="primary">Calculate shipping</button></div>
               </form>
             </section>
 
             <section class="panel disabled" id="ratesPanel">
-              <div class="panel-head"><div><span class="step">03</span><h2>Shipping options</h2></div><span class="chip muted" id="ratesChip">Enter an address</span></div>
-              <div id="customerRates" class="rate-list"></div>
-              <div class="empty" id="rateEmpty"><strong>Rates appear here</strong><p>Services are simulated from the Toronto fulfillment origin.</p></div>
+              <div class="panel-head"><div><span class="step">03</span><h2>Your shipping price</h2></div><span class="chip muted" id="ratesChip">Enter an address</span></div>
+              <div id="customerRates" class="flat-rate-wrap"></div>
+              <div class="empty" id="rateEmpty"><strong>One price, no carrier decision</strong><p>We calculate an estimated best available fulfillment rate from Toronto and add a small operating cushion.</p></div>
             </section>
 
             <section class="panel disabled" id="confirmPanel">
-              <div class="panel-head"><div><span class="step">04</span><h2>Confirm shipment</h2></div><span class="chip muted" id="confirmChip">Select a rate</span></div>
-              <div class="confirm-grid"><div><span>Ship to</span><strong id="confirmAddress">—</strong></div><div><span>Service</span><strong id="confirmService">—</strong></div><div><span>Items</span><strong id="confirmItems">—</strong></div><div><span>Shipping</span><strong id="confirmPrice">—</strong></div></div>
-              <button class="primary full" id="requestShipment" disabled>Request shipment</button>
+              <div class="panel-head"><div><span class="step">04</span><h2>Pay for shipping</h2></div><span class="chip muted" id="confirmChip">Calculate shipping first</span></div>
+              <div class="confirm-grid"><div><span>Ship to</span><strong id="confirmAddress">—</strong></div><div><span>Shipping</span><strong id="confirmService">Standard shipping</strong></div><div><span>Items</span><strong id="confirmItems">—</strong></div><div><span>Total due</span><strong id="confirmPrice">—</strong></div></div>
+              <div class="payment-box">
+                <div class="payment-title"><div><span class="eyebrow">Payment method</span><h3>Cash balance</h3></div><span class="chip success">Required</span></div>
+                <div class="balance-row"><span>Cash available</span><strong id="cashBalance">C$75.00</strong></div>
+                <div class="balance-row disabled-balance"><span>Credits</span><strong>1,250 · Not eligible for shipping</strong></div>
+                <p>Shipping fees can only be paid from your cash balance. Credits cannot be applied.</p>
+              </div>
+              <button class="primary full" id="requestShipment" disabled>Pay cash & request shipment</button>
             </section>
 
             <section class="panel hidden" id="trackingPanel">
               <div class="panel-head"><div><span class="step">SHIPMENT</span><h2>Tracking</h2></div><span class="chip success" id="customerStatus">Requested</span></div>
-              <div class="tracking-hero"><div><span id="trackingCarrier">Carrier pending</span><h3 id="trackingTitle">Fulfillment request received.</h3><p id="trackingSubtitle">The Toronto team has your request.</p></div><div><span>Tracking number</span><strong id="trackingNumber">Pending</strong></div></div>
+              <div class="tracking-hero"><div><span id="trackingCarrier">Carrier being selected by fulfillment</span><h3 id="trackingTitle">Fulfillment request received.</h3><p id="trackingSubtitle">The Toronto team has your request.</p></div><div><span>Tracking number</span><strong id="trackingNumber">Pending</strong></div></div>
               <div id="trackingProgress" class="progress"></div>
               <div id="trackingEvents" class="events"></div>
             </section>
           </div>
 
           <aside class="sidebar">
-            <section class="side-card"><span class="eyebrow">Shipment snapshot</span><div><span>Origin</span><strong>Toronto, ON</strong></div><div><span>Items</span><strong id="snapItems">None</strong></div><div><span>Destination</span><strong id="snapDestination">Not set</strong></div><div><span>Service</span><strong id="snapService">Not selected</strong></div><div><span>Status</span><strong id="snapStatus">Draft</strong></div></section>
-            <section class="side-card info"><strong>Demo environment</strong><p>Rates, labels, and tracking scans are illustrative. The data layer is structured so live Chit Chats APIs can replace the simulation.</p></section>
+            <section class="side-card"><span class="eyebrow">Shipment snapshot</span><div><span>Origin</span><strong>Toronto, ON</strong></div><div><span>Items</span><strong id="snapItems">None</strong></div><div><span>Destination</span><strong id="snapDestination">Not set</strong></div><div><span>Shipping</span><strong id="snapService">Not calculated</strong></div><div><span>Status</span><strong id="snapStatus">Draft</strong></div></section>
+            <section class="side-card info"><strong>How pricing works</strong><p>You see one locked shipping charge. Fulfillment selects the actual carrier after packing and keeps carrier choice invisible until tracking is created.</p></section>
           </aside>
         </div>
       </section>
 
       <section class="view" id="ops">
-        <div class="hero"><div><span class="eyebrow">Toronto fulfillment operations</span><h1>Pack, rate, label, dispatch.</h1><p>The operations side receives the exact order requested by the customer. Every status change feeds back to customer tracking.</p></div><div class="kpis"><div><span>Open</span><strong id="openKpi">0</strong></div><div><span>Ready</span><strong id="readyKpi">0</strong></div><div><span>Shipped</span><strong id="shippedKpi">0</strong></div></div></div>
+        <div class="hero"><div><span class="eyebrow">Toronto fulfillment operations</span><h1>Pack, rate, label, dispatch.</h1><p>The customer pays one locked shipping charge. Ops weighs the real parcel, compares eligible services, then chooses the actual carrier.</p></div><div class="kpis"><div><span>Open</span><strong id="openKpi">0</strong></div><div><span>Ready</span><strong id="readyKpi">0</strong></div><div><span>Shipped</span><strong id="shippedKpi">0</strong></div></div></div>
 
         <div class="layout ops-layout">
           <aside class="panel queue"><div class="panel-head"><div><span class="step">QUEUE</span><h2>Requests</h2></div></div><div id="queueEmpty" class="empty"><strong>No active request</strong><p>Complete the customer flow first.</p></div><button id="queueOrder" class="queue-order hidden"><div><strong>FU-10482</strong><span class="chip warning" id="queueStatus">New</span></div><span id="queueCustomer">Alex Morgan</span><small id="queueSummary">—</small><small id="queueDestination">—</small></button></aside>
 
           <div class="stack">
-            <section class="panel empty ops-placeholder" id="opsPlaceholder"><strong>Waiting for a fulfillment request</strong><p>Switch to Customer, choose items and request shipment.</p></section>
+            <section class="panel empty ops-placeholder" id="opsPlaceholder"><strong>Waiting for a fulfillment request</strong><p>Switch to Customer, choose items, calculate shipping and pay the cash shipping charge.</p></section>
             <div id="opsOrder" class="stack hidden">
-              <section class="panel"><div class="ops-title"><div><span class="eyebrow">Order FU-10482</span><h2 id="opsName">Alex Morgan</h2><p id="opsDestination">—</p></div><span class="chip warning" id="opsStatus">New request</span></div><div class="meta-row"><div><span>Requested service</span><strong id="opsRequestedService">—</strong></div><div><span>Customer paid</span><strong id="opsRequestedPrice">—</strong></div><div><span>Origin</span><strong>Toronto, ON</strong></div></div></section>
+              <section class="panel"><div class="ops-title"><div><span class="eyebrow">Order FU-10482</span><h2 id="opsName">Alex Morgan</h2><p id="opsDestination">—</p></div><span class="chip warning" id="opsStatus">New request</span></div><div class="meta-row"><div><span>Customer shipping charge</span><strong id="opsRequestedPrice">—</strong></div><div><span>Payment</span><strong>Cash · Paid</strong></div><div><span>Origin</span><strong>Toronto, ON</strong></div></div></section>
 
-              <section class="panel"><div class="panel-head"><div><span class="step">01 · VERIFY</span><h2>Items & destination</h2></div><span class="chip muted" id="verifyChip">Needs verification</span></div><div class="verify-grid"><div><h3>Items to pull</h3><div id="opsItems"></div></div><div><h3>Ship to</h3><div class="address-card" id="opsAddress"></div><div class="checks"><span>✓ Country not blacklisted</span><span>✓ Carrier service available</span><span>✓ Address format validated</span></div></div></div><button class="secondary" id="verifyBtn">Verify order</button></section>
+              <section class="panel"><div class="panel-head"><div><span class="step">01 · VERIFY</span><h2>Items & destination</h2></div><span class="chip muted" id="verifyChip">Needs verification</span></div><div class="verify-grid"><div><h3>Items to pull</h3><div id="opsItems"></div></div><div><h3>Ship to</h3><div class="address-card" id="opsAddress"></div><div class="checks"><span>✓ Country not blacklisted</span><span>✓ Carrier service available</span><span>✓ Address format validated</span><span>✓ Shipping paid in cash</span></div></div></div><button class="secondary" id="verifyBtn">Verify order</button></section>
 
-              <section class="panel disabled" id="packingSection"><div class="panel-head"><div><span class="step">02 · PACK</span><h2>Package details</h2></div><span class="chip muted" id="packingChip">Verify first</span></div><div class="form-grid"><label>Actual weight (kg)<input id="actualWeight" type="number" step="0.1" /></label><label>Length (cm)<input id="length" type="number" /></label><label>Width (cm)<input id="width" type="number" /></label><label>Height (cm)<input id="height" type="number" /></label><label>Declared value (CAD)<input id="declaredValue" type="number" /></label><label>Packaging<select id="packaging"><option>Shipping box</option><option>Poly mailer</option><option>Double-wall box</option></select></label></div><label class="checkline"><input id="fragile" type="checkbox" /> Collector packaging required</label><button class="secondary" id="savePackage">Save package & re-rate</button></section>
+              <section class="panel disabled" id="packingSection"><div class="panel-head"><div><span class="step">02 · PACK</span><h2>Package details</h2></div><span class="chip muted" id="packingChip">Verify first</span></div><div class="form-grid"><label>Actual weight (kg)<input id="actualWeight" type="number" step="0.1" /></label><label>Length (cm)<input id="length" type="number" /></label><label>Width (cm)<input id="width" type="number" /></label><label>Height (cm)<input id="height" type="number" /></label><label>Declared value (CAD)<input id="declaredValue" type="number" /></label><label>Packaging<select id="packaging"><option>Shipping box</option><option>Poly mailer</option><option>Double-wall box</option></select></label></div><label class="checkline"><input id="fragile" type="checkbox" /> Collector packaging required</label><button class="secondary" id="savePackage">Save package & compare carriers</button></section>
 
-              <section class="panel disabled" id="opsRatesSection"><div class="panel-head"><div><span class="step">03 · RATE</span><h2>Carrier options</h2></div><span class="chip muted" id="opsRatesChip">Pack first</span></div><div id="opsRates"></div><p id="rateDelta" class="note"></p></section>
+              <section class="panel disabled" id="opsRatesSection"><div class="panel-head"><div><span class="step">03 · RATE</span><h2>Choose actual carrier</h2></div><span class="chip muted" id="opsRatesChip">Pack first</span></div><div id="opsRates" class="rate-list"></div><p id="rateDelta" class="note"></p></section>
 
-              <section class="panel disabled" id="labelSection"><div class="panel-head"><div><span class="step">04 · LABEL</span><h2>Purchase & print</h2></div><span class="chip muted" id="labelChip">Select a carrier</span></div><div class="label-grid"><div class="label-preview"><div><strong id="labelCarrier">Carrier</strong><span id="labelService">Service</span></div><p>FROM <b>TORONTO, ON</b></p><p>TO <b id="labelDest">—</b></p><div class="barcode"></div><strong id="labelTracking">TRACKING PENDING</strong></div><div class="costs"><div><span>Postage</span><strong id="labelPostage">—</strong></div><div><span>Insurance</span><strong>Included</strong></div><div><span>Total</span><strong id="labelTotal">—</strong></div><button class="primary" id="buyLabel" disabled>Buy label</button><button class="secondary" id="printLabel" disabled>Print 4×6 label</button></div></div></section>
+              <section class="panel disabled" id="labelSection"><div class="panel-head"><div><span class="step">04 · LABEL</span><h2>Purchase & print</h2></div><span class="chip muted" id="labelChip">Select a carrier</span></div><div class="label-grid"><div class="label-preview"><div><strong id="labelCarrier">Carrier</strong><span id="labelService">Service</span></div><p>FROM <b>TORONTO, ON</b></p><p>TO <b id="labelDest">—</b></p><div class="barcode"></div><strong id="labelTracking">TRACKING PENDING</strong></div><div class="costs"><div><span>Customer charged</span><strong id="labelCustomerCharge">—</strong></div><div><span>Actual postage</span><strong id="labelPostage">—</strong></div><div><span>Shipping margin</span><strong id="labelMargin">—</strong></div><div><span>Insurance</span><strong>Included</strong></div><button class="primary" id="buyLabel" disabled>Buy label</button><button class="secondary" id="printLabel" disabled>Print 4×6 label</button></div></div></section>
 
               <section class="panel disabled" id="dispatchSection"><div class="panel-head"><div><span class="step">05 · DISPATCH</span><h2>Handoff & tracking</h2></div><span class="chip muted" id="dispatchChip">Create label first</span></div><div class="confirm-grid"><div><span>Tracking</span><strong id="opsTracking">—</strong></div><div><span>Handoff</span><strong>Toronto fulfillment hub</strong></div><div><span>Current scan</span><strong id="currentScan">Label created</strong></div></div><div class="actions"><button class="primary" id="dispatchBtn" disabled>Mark handed to carrier</button><button class="secondary" id="advanceTracking" disabled>Simulate next tracking scan</button></div></section>
             </div>
