@@ -1,0 +1,72 @@
+/* Keep the fulfillment rail usable without scrolling the whole page. */
+#ops .queue {
+  position: sticky;
+  top: 88px;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 112px);
+  overflow: hidden;
+}
+
+#ops .queue .panel-head,
+#ops .queue .ops-rail-tabs {
+  flex: 0 0 auto;
+}
+
+#ops .queue .queue-pane,
+#ops .queue .archive-pane {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #3b3b42 transparent;
+  padding-right: 5px;
+}
+
+#ops .queue > .queue-list {
+  max-height: calc(100vh - 250px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding-right: 5px;
+}
+
+#ops .queue .queue-pane .queue-list {
+  max-height: none;
+  overflow: visible;
+  padding-right: 0;
+}
+
+#ops .queue .queue-pane::-webkit-scrollbar,
+#ops .queue .archive-pane::-webkit-scrollbar,
+#ops .queue > .queue-list::-webkit-scrollbar {
+  width: 7px;
+}
+
+#ops .queue .queue-pane::-webkit-scrollbar-thumb,
+#ops .queue .archive-pane::-webkit-scrollbar-thumb,
+#ops .queue > .queue-list::-webkit-scrollbar-thumb {
+  background: #34343a;
+  border-radius: 999px;
+}
+
+#ops .queue .queue-pane::-webkit-scrollbar-track,
+#ops .queue .archive-pane::-webkit-scrollbar-track,
+#ops .queue > .queue-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (max-width: 900px) {
+  #ops .queue {
+    position: relative;
+    top: auto;
+    max-height: 620px;
+  }
+
+  #ops .queue .queue-pane,
+  #ops .queue .archive-pane,
+  #ops .queue > .queue-list {
+    max-height: 500px;
+  }
+}
