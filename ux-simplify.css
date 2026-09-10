@@ -1,0 +1,60 @@
+/* Customer: one focused checkout column, less repeated information. */
+#customer .customer-layout.ux-single-column{grid-template-columns:minmax(0,1fr);max-width:980px;margin-inline:auto}
+#customer .customer-sidebar.ux-customer-sidebar-hidden{display:none!important}
+#customer .hero.ux-compact-hero{margin-bottom:22px}
+#customer .hero.ux-compact-hero p{max-width:650px}
+#customer .panel{scroll-margin-top:92px}
+#customer #ratesPanel.ux-quote-hidden{display:none!important}
+#customer .ux-shipping-summary{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 18px;margin:0 0 14px;border:1px solid #2e5b3c;border-radius:12px;background:rgba(72,178,105,.08)}
+#customer .ux-shipping-summary.hidden{display:none!important}
+#customer .ux-shipping-summary>div{display:flex;flex-direction:column;gap:4px;min-width:0}
+#customer .ux-shipping-summary span{font-size:10px;color:#86868d;text-transform:uppercase;letter-spacing:.07em}
+#customer .ux-shipping-summary strong{font-size:14px;color:#f4f4f5;overflow-wrap:anywhere}
+#customer .ux-shipping-summary b{font-size:20px;white-space:nowrap;color:#83e9a2}
+#customer .confirm-grid.ux-compact-confirm{grid-template-columns:minmax(0,1.5fr) minmax(150px,.5fr)}
+#customer .confirm-grid .ux-hide-confirm-field{display:none!important}
+#customer .payment-box.ux-simple-payment{padding:14px 16px}
+#customer .payment-box.ux-simple-payment .payment-title{margin-bottom:8px}
+#customer .payment-box.ux-simple-payment .disabled-balance,
+#customer .payment-box.ux-simple-payment>p{display:none!important}
+#customer .ux-cash-note{margin-top:8px;font-size:11px;color:#77777e;line-height:1.45}
+#customer #requestShipment{min-height:48px;font-weight:750}
+
+/* Ops: compact header and clearer action hierarchy. */
+#ops .hero.ux-compact-hero{margin-bottom:18px}
+#ops .hero.ux-compact-hero h1{font-size:clamp(26px,3vw,38px)}
+#ops .hero.ux-compact-hero p{max-width:680px}
+#ops #opsOrder>.panel:first-child{padding-bottom:16px}
+#ops .ops-section-title-short{letter-spacing:0}
+#ops .panel{scroll-margin-top:92px}
+#ops .ux-more-options,
+#ops .ux-compliance-details{margin:12px 0 0;border:1px solid #29292e;border-radius:10px;background:#101012;overflow:hidden}
+#ops .ux-more-options>summary,
+#ops .ux-compliance-details>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:42px;padding:0 13px;cursor:pointer;color:#b7b7bd;font-size:11px;font-weight:700;list-style:none}
+#ops .ux-more-options>summary::-webkit-details-marker,
+#ops .ux-compliance-details>summary::-webkit-details-marker{display:none}
+#ops .ux-more-options>summary::after,
+#ops .ux-compliance-details>summary::after{content:'+';font-size:16px;color:#77777f;font-weight:400}
+#ops .ux-more-options[open]>summary::after,
+#ops .ux-compliance-details[open]>summary::after{content:'−'}
+#ops .ux-more-options__body{padding:0 13px 13px;display:grid;grid-template-columns:1fr;gap:10px}
+#ops .ux-more-options__body label{margin:0}
+#ops .ux-compliance-details #compliancePanel{margin:0;border:0;border-top:1px solid #29292e;border-radius:0;background:transparent}
+#ops .ux-compliance-details #compliancePanel .compliance-panel__head{padding-top:12px}
+#ops .ux-compliance-details:not([open]) #compliancePanel{display:none}
+#ops #savePackage{margin-top:14px}
+#ops #printLabel.ux-hidden-secondary{display:none!important}
+#ops #buyLabel{width:100%;min-height:46px}
+#ops .rate.ops-rate{min-height:82px!important}
+#ops .ops-rate-summary{margin-bottom:10px}
+#ops .ux-auto-note{font-size:10px;color:#6f6f76;margin:8px 0 0}
+#ops .ux-step-complete{border-color:#284631!important}
+#ops .ux-step-complete>.panel-head{margin-bottom:10px}
+#ops .ux-next-hint{display:inline-flex;align-items:center;gap:7px;margin-left:auto;font-size:10px;color:#7a7a82;white-space:nowrap}
+#ops .ux-next-hint::before{content:'';width:6px;height:6px;border-radius:50%;background:#66d58a}
+
+@media(max-width:720px){
+  #customer .ux-shipping-summary{align-items:flex-start;flex-direction:column;gap:10px}
+  #customer .confirm-grid.ux-compact-confirm{grid-template-columns:1fr}
+  #ops .ux-more-options__body{grid-template-columns:1fr}
+}
