@@ -120,11 +120,15 @@
   }
 
   function loadStyle(href) {
-    if (document.querySelector(`link[href="${href}"]`)) return;
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = href;
-    document.head.appendChild(link);
+    if (document.querySelector(`link[href="${href}"]`)) return Promise.resolve();
+    return new Promise((resolve) => {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = href;
+      link.onload = resolve;
+      link.onerror = resolve;
+      document.head.appendChild(link);
+    });
   }
 
   loadScript('ux-simplify.js')
@@ -132,5 +136,8 @@
     .then(() => loadScript('carrier-selection.js'))
     .then(() => loadScript('tracking-ui.js'))
     .then(() => loadScript('label-ui.js'))
-    .then(() => loadStyle('visual-polish.css'));
+    .then(() => loadStyle('visual-polish.css'))
+    .then(() => loadStyle('fixed-shell.css'))
+    .then(() => loadScript('fixed-shell.js'))
+    .then(() => loadScript('customer-copy.js'));
 })();
