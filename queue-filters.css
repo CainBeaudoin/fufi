@@ -1,0 +1,85 @@
+/* Operational status filters inside the independently scrollable Ops rail. */
+.queue-status-filters,
+.archive-status-filters {
+  position: sticky;
+  z-index: 4;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px 0 10px;
+  background: linear-gradient(#121214 78%, rgba(18,18,20,0));
+}
+
+.queue-status-filters { top: 0; }
+.archive-status-filters { top: 0; }
+.queue-status-filters::-webkit-scrollbar,
+.archive-status-filters::-webkit-scrollbar { display: none; }
+
+.queue-filter-chip {
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid #2b2b30;
+  border-radius: 999px;
+  background: #151517;
+  color: #85858d;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.queue-filter-chip:hover {
+  color: #d9d9dd;
+  border-color: #404047;
+  background: #1a1a1e;
+}
+
+.queue-filter-chip.is-active {
+  color: #f4f4f5;
+  border-color: #55555d;
+  background: #26262b;
+}
+
+.queue-filter-chip[data-filter="pending"].is-active { border-color: #6b5a35; color: #e8c77f; background: rgba(153,118,48,.12); }
+.queue-filter-chip[data-filter="packing"].is-active { border-color: #6b5a35; color: #e8c77f; background: rgba(153,118,48,.12); }
+.queue-filter-chip[data-filter="ready"].is-active,
+.queue-filter-chip[data-filter="label"].is-active { border-color: #396848; color: #84e4a2; background: rgba(67,158,94,.11); }
+.queue-filter-chip[data-filter="shipped"] { border-color: #304254; }
+
+.queue-filter-chip span {
+  display: inline-block;
+  margin-left: 4px;
+  color: #696971;
+  font-size: 9px;
+}
+.queue-filter-chip.is-active span { color: inherit; opacity: .75; }
+
+.queue-filter-empty {
+  display: none;
+  padding: 26px 12px;
+  text-align: center;
+  color: #73737b;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.queue-filter-empty.is-visible { display: block; }
+
+/* Archive search stays visible while history scrolls; filters sit below it. */
+#ops .archive-pane .archive-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding-bottom: 8px;
+  background: #121214;
+}
+#ops .archive-pane .archive-status-filters {
+  top: 66px;
+  background: linear-gradient(#121214 78%, rgba(18,18,20,0));
+}
+
+@media (max-width: 620px) {
+  .queue-filter-chip { min-height: 34px; padding: 0 11px; }
+}
