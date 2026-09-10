@@ -109,4 +109,9 @@
     });
     observer.observe(document.body, { childList: true, subtree: true });
   }
+
+  const uxScript = document.createElement('script');
+  uxScript.src = 'ux-simplify.js';
+  uxScript.defer = true;
+  document.body.appendChild(uxScript);
 })();
