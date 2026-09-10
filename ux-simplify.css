@@ -21,9 +21,12 @@
 #customer #requestShipment{min-height:48px;font-weight:750}
 
 /* Ops: compact header and clearer action hierarchy. */
-#ops .hero.ux-compact-hero{margin-bottom:18px}
-#ops .hero.ux-compact-hero h1{font-size:clamp(26px,3vw,38px)}
-#ops .hero.ux-compact-hero p{max-width:680px}
+#ops .hero.ux-compact-hero{margin-bottom:10px;align-items:center;min-height:0}
+#ops .hero.ux-compact-hero .eyebrow,
+#ops .hero.ux-compact-hero p{display:none!important}
+#ops .hero.ux-compact-hero h1{font-size:clamp(24px,2.4vw,32px);margin:0;line-height:1.05}
+#ops .hero.ux-compact-hero>div:first-child{display:flex;align-items:center;min-height:0}
+#ops .hero.ux-compact-hero .kpis{align-self:center}
 #ops #opsOrder>.panel:first-child{padding-bottom:16px}
 #ops .ops-section-title-short{letter-spacing:0}
 #ops .panel{scroll-margin-top:92px}
