@@ -7,48 +7,68 @@
   window.signedMoney = (value) => `${Number(value) < 0 ? '-' : '+'}$${Math.abs(Number(value || 0)).toFixed(2)}`;
   window.FUFI_BASE_CURRENCY = 'USD';
 
-  function replaceText(root = document.body) {
+  function convertTextNode(node) {
+    if (!node || node.nodeType !== Node.TEXT_NODE) return;
+    const value = node.nodeValue;
+    if (!value || (!value.includes('C$') && !/\bCAD\b/.test(value))) return;
+    const next = value.replace(/C\$/g, '$').replace(/\bCAD\b/g, 'USD');
+    if (next !== value) node.nodeValue = next;
+  }
+
+  function convertTree(root) {
     if (!root) return;
+    if (root.nodeType === Node.TEXT_NODE) {
+      convertTextNode(root);
+      return;
+    }
+    if (root.nodeType !== Node.ELEMENT_NODE && root !== document.body) return;
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-    const nodes = [];
-    while (walker.nextNode()) nodes.push(walker.currentNode);
-    nodes.forEach((node) => {
-      const value = node.nodeValue;
-      if (!value) return;
-      const next = value
-        .replace(/C\$/g, '$')
-        .replace(/\bCAD\b/g, 'USD');
-      if (next !== value) node.nodeValue = next;
-    });
+    while (walker.nextNode()) convertTextNode(walker.currentNode);
+  }
+
+  function setTextIfChanged(node, value) {
+    if (node && node.textContent !== value) node.textContent = value;
   }
 
   function refreshKnownAmounts() {
-    const cash = document.getElementById('cashBalance');
     try {
-      if (cash && typeof state !== 'undefined') cash.textContent = formatUSD(state.cashBalance);
-    } catch (_) {}
+      const cash = document.getElementById('cashBalance');
+      if (cash && typeof state !== 'undefined') setTextIfChanged(cash, formatUSD(state.cashBalance));
 
-    const charge = document.getElementById('uxShippingPrice');
-    try {
-      if (charge && typeof state !== 'undefined' && state.customerCharge) charge.textContent = formatUSD(state.customerCharge);
+      const charge = document.getElementById('uxShippingPrice');
+      if (charge && typeof state !== 'undefined' && state.customerCharge != null) {
+        setTextIfChanged(charge, formatUSD(state.customerCharge));
+      }
     } catch (_) {}
 
     const declared = document.getElementById('declaredValue')?.closest('label');
     if (declared) {
       const text = [...declared.childNodes].find((node) => node.nodeType === Node.TEXT_NODE);
-      if (text && /CAD|Customs \/ insurance value/i.test(text.nodeValue || '')) {
+      if (text && text.nodeValue !== 'Customs / insurance value (USD)') {
         text.nodeValue = 'Customs / insurance value (USD)';
       }
     }
   }
 
-  const sync = () => {
-    replaceText(document.body);
-    refreshKnownAmounts();
-    document.documentElement.dataset.currency = 'USD';
-  };
+  convertTree(document.body);
+  refreshKnownAmounts();
+  document.documentElement.dataset.currency = 'USD';
 
-  sync();
-  const observer = new MutationObserver(() => requestAnimationFrame(sync));
+  let scheduled = false;
+  const observer = new MutationObserver((mutations) => {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(() => {
+      scheduled = false;
+      observer.disconnect();
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'characterData') convertTextNode(mutation.target);
+        mutation.addedNodes?.forEach(convertTree);
+      });
+      refreshKnownAmounts();
+      observer.observe(document.body, { subtree: true, childList: true, characterData: true });
+    });
+  });
+
   observer.observe(document.body, { subtree: true, childList: true, characterData: true });
 })();
