@@ -26,13 +26,44 @@ const itemData = {
 // Demo stand-in for Settings → Shipping → Service Areas.
 const blockedCountries = ['DE'];
 
+// Customer-facing milestones begin only after shipping has been paid.
 const trackingStages = [
-  { status: 'Requested', title: 'Fulfillment request received.', subtitle: 'The Toronto fulfillment team has your paid request.', event: 'Shipping paid in cash and fulfillment requested.' },
-  { status: 'Packing', title: 'Your items are being packed.', subtitle: 'The fulfillment team verified your order and is preparing the parcel.', event: 'Items verified and packing started.' },
-  { status: 'Label created', title: 'Your shipping label is ready.', subtitle: 'The fulfillment team selected a carrier and assigned tracking.', event: 'Carrier selected and label created in Toronto.' },
-  { status: 'In transit', title: 'Your shipment is on the way.', subtitle: 'The parcel has been handed to the carrier.', event: 'Parcel accepted by carrier in Toronto.' },
-  { status: 'In transit', title: 'Moving through the carrier network.', subtitle: 'Your shipment is progressing toward the destination.', event: 'Shipment processed at carrier facility.' },
-  { status: 'Delivered', title: 'Delivered.', subtitle: 'Your shipment has reached its destination.', event: 'Delivered to destination.' }
+  {
+    status: 'Packing',
+    title: 'Our team is packing your order.',
+    subtitle: 'Your order has been sent to our Toronto fulfillment team. They’re preparing it for shipment.',
+    event: 'Fulfillment started in Toronto.'
+  },
+  {
+    status: 'Label created',
+    title: 'Your shipment is ready to go.',
+    subtitle: 'We selected the carrier, purchased the label, and assigned your tracking number.',
+    event: 'Shipping label created.'
+  },
+  {
+    status: 'Shipped',
+    title: 'Your order has shipped.',
+    subtitle: 'The parcel has been handed to the carrier and is leaving our Toronto fulfillment hub.',
+    event: 'Parcel handed to carrier.'
+  },
+  {
+    status: 'In transit',
+    title: 'Your order is on the way.',
+    subtitle: 'The carrier is moving your shipment through its network toward the destination.',
+    event: 'Shipment processed in the carrier network.'
+  },
+  {
+    status: 'Out for delivery',
+    title: 'Out for delivery.',
+    subtitle: 'Your shipment is with the local delivery driver and should arrive soon.',
+    event: 'Shipment is out for delivery.'
+  },
+  {
+    status: 'Delivered',
+    title: 'Delivered.',
+    subtitle: 'Your order has reached its destination.',
+    event: 'Shipment delivered.'
+  }
 ];
 
 $('cashBalance').textContent = money(state.cashBalance);
@@ -48,6 +79,7 @@ document.querySelectorAll('.tab').forEach((btn) => {
 
 document.querySelectorAll('.item').forEach((btn) => {
   btn.addEventListener('click', () => {
+    if (state.requested) return;
     const id = btn.dataset.item;
     btn.classList.toggle('selected');
     state.items = btn.classList.contains('selected')
@@ -106,7 +138,7 @@ function resetQuote() {
 
 $('addressForm').addEventListener('submit', (event) => {
   event.preventDefault();
-  if (!state.items.length) return;
+  if (!state.items.length || state.requested) return;
 
   state.address = Object.fromEntries(new FormData(event.currentTarget).entries());
   $('snapDestination').textContent = `${state.address.city}, ${state.address.region}`;
@@ -116,7 +148,7 @@ $('addressForm').addEventListener('submit', (event) => {
     return;
   }
 
-  state.eligibleRates = getRates(state.address, packageEstimate(), false);
+  state.eligibleRates = getRates(state.address, packageEstimate());
   if (!state.eligibleRates.length) {
     renderUnavailableDestination();
     return;
@@ -139,7 +171,7 @@ function renderCustomerFlatRate() {
       <div>
         <span class="eyebrow">Standard shipping</span>
         <h3>${destinationLabel(state.address)}</h3>
-        <p>Your price is locked now. The Toronto fulfillment team will choose the actual carrier after the parcel is packed and measured.</p>
+        <p>This is your final shipping price. We’ll choose the actual carrier after your parcel is packed and measured.</p>
         <div class="flat-rate-meta">
           <span>Estimated ${rate.days}</span>
           <span>Tracked delivery</span>
@@ -164,7 +196,7 @@ function preparePayment() {
   $('confirmService').textContent = 'Standard shipping';
   $('confirmItems').textContent = state.items.map((x) => itemData[x].type).join(' + ');
   $('confirmPrice').textContent = money(state.customerCharge);
-  $('requestShipment').textContent = `Pay ${money(state.customerCharge)} cash & request shipment`;
+  $('requestShipment').textContent = `Pay ${money(state.customerCharge)} cash & fulfill`;
 
   const canPay = state.cashBalance >= state.customerCharge;
   $('requestShipment').disabled = !canPay;
@@ -191,7 +223,7 @@ function renderUnavailableDestination() {
   $('confirmPanel').classList.add('disabled');
 }
 
-function getRates(address, pkg, ops = false) {
+function getRates(address, pkg) {
   const country = address.country;
   const isToronto = country === 'CA' && String(address.city || '').trim().toLowerCase().includes('toronto');
   let rates;
@@ -231,37 +263,54 @@ function getRates(address, pkg, ops = false) {
     ];
   }
 
-  // Illustrative dimensional-weight adjustment. Real integrations should use carrier-returned rates.
   const dimensionalWeight = (pkg.dims[0] * pkg.dims[1] * pkg.dims[2]) / 5000;
   const billableWeight = Math.max(pkg.weight, dimensionalWeight);
   const sizeAdjustment = Math.max(0, billableWeight - 3) * 1.35;
-  const opsAdjustment = ops ? 0 : 0.5;
 
   return rates.map((rate, index) => ({
     ...rate,
     id: `rate-${index}`,
-    price: +(rate.price + sizeAdjustment + opsAdjustment).toFixed(2)
+    price: +(rate.price + sizeAdjustment).toFixed(2)
   }));
 }
 
 $('requestShipment').addEventListener('click', () => {
-  if (!state.customerCharge || state.cashBalance < state.customerCharge) return;
+  if (!state.customerCharge || state.cashBalance < state.customerCharge || state.requested) return;
+
   state.cashBalance = +(state.cashBalance - state.customerCharge).toFixed(2);
   state.requested = true;
   state.trackingIndex = 0;
   state.tracking = null;
   $('cashBalance').textContent = money(state.cashBalance);
-  $('trackingPanel').classList.remove('hidden');
-  $('confirmPanel').classList.add('disabled');
-  $('snapStatus').textContent = 'Paid · Requested';
+
+  enterCustomerFulfillmentMode();
   createOpsOrder();
   renderTracking();
-  toast(`${money(state.customerCharge)} paid from cash balance`);
+  toast(`${money(state.customerCharge)} paid · sent to fulfillment`);
 });
+
+function enterCustomerFulfillmentMode() {
+  const customerPanels = document.querySelectorAll('#customer .customer-layout .stack > .panel');
+  customerPanels.forEach((panel) => panel.classList.add('hidden'));
+  $('trackingPanel').classList.remove('hidden');
+
+  const heroTitle = document.querySelector('#customer .hero h1');
+  const heroCopy = document.querySelector('#customer .hero p');
+  if (heroTitle) heroTitle.textContent = 'Your order is being fulfilled.';
+  if (heroCopy) heroCopy.textContent = 'Shipping is paid. From here, you only need to follow your fulfillment and delivery updates.';
+
+  $('snapStatus').textContent = 'Packing';
+
+  const infoCard = document.querySelector('#customer .side-card.info');
+  if (infoCard) {
+    infoCard.innerHTML = `<strong>Shipping paid</strong><p>${money(state.customerCharge)} was paid from your cash balance. Your fulfillment request is now with our Toronto team.</p>`;
+  }
+}
 
 function createOpsOrder() {
   const a = state.address;
   const pkg = packageEstimate();
+
   $('opsPlaceholder').classList.add('hidden');
   $('opsOrder').classList.remove('hidden');
   $('queueEmpty').classList.add('hidden');
@@ -295,30 +344,36 @@ $('verifyBtn').addEventListener('click', () => {
   $('packingSection').classList.remove('disabled');
   $('packingChip').textContent = 'Ready to pack';
   $('packingChip').className = 'chip success';
+  $('opsStatus').textContent = 'Packing';
+  $('opsStatus').className = 'chip warning';
+  $('queueStatus').textContent = 'Packing';
+  $('queueStatus').className = 'chip warning';
   $('readyKpi').textContent = '1';
-  advanceCustomerTo(1);
-  toast('Order verified');
+  renderTracking();
+  toast('Order verified · customer remains in Packing');
 });
 
 $('savePackage').addEventListener('click', () => {
   state.packed = true;
   state.opsRate = null;
+
   const pkg = {
     weight: +$('actualWeight').value,
     dims: [+$('length').value, +$('width').value, +$('height').value],
     value: +$('declaredValue').value
   };
-  const rates = getRates(state.address, pkg, true);
+
+  const rates = getRates(state.address, pkg);
   renderOpsRates(rates);
   $('opsRatesSection').classList.remove('disabled');
-  $('opsRatesChip').textContent = `${rates.length} eligible services`;
+  $('opsRatesChip').textContent = `${rates.length} carrier options`;
   $('opsRatesChip').className = 'chip success';
   $('packingChip').textContent = 'Packed';
   $('packingChip').className = 'chip success';
-  const cheapest = Math.min(...rates.map((r) => r.price));
-  const cushionVsCheapest = state.customerCharge - cheapest;
-  $('rateDelta').innerHTML = `Customer charge is locked at <strong>${money(state.customerCharge)}</strong>. Current cheapest postage is <strong>${money(cheapest)}</strong> (${signedMoney(cushionVsCheapest)} difference). Choose whichever carrier best balances cost and service. Customer is not re-quoted.`;
-  toast('Package saved and carrier rates compared');
+
+  const cheapest = [...rates].sort((a, b) => a.price - b.price)[0];
+  $('rateDelta').textContent = `Customer paid ${money(state.customerCharge)}. Current cheapest postage after packing is ${money(cheapest.price)}. Choose the service that best balances cost and delivery.`;
+  toast('Package saved · carrier options refreshed');
 });
 
 function renderOpsRates(rates) {
@@ -342,20 +397,19 @@ function renderOpsRates(rates) {
 
 function prepareLabel() {
   const rate = state.opsRate;
-  const margin = +(state.customerCharge - rate.price).toFixed(2);
   $('labelSection').classList.remove('disabled');
   $('labelChip').textContent = 'Ready to buy';
   $('labelChip').className = 'chip success';
   $('labelCarrier').textContent = rate.carrier;
   $('labelService').textContent = rate.service;
-  $('labelCustomerCharge').textContent = money(state.customerCharge);
   $('labelPostage').textContent = money(rate.price);
-  $('labelMargin').textContent = signedMoney(margin);
-  $('labelMargin').className = margin >= 0 ? 'margin-positive' : 'margin-negative';
+  $('labelMargin').textContent = signedMoney(state.customerCharge - rate.price);
   $('buyLabel').disabled = false;
 }
 
 $('buyLabel').addEventListener('click', () => {
+  if (!state.opsRate || state.labelBought) return;
+
   state.labelBought = true;
   state.tracking = trackingNumber(state.opsRate.carrier);
   $('labelTracking').textContent = state.tracking;
@@ -368,81 +422,120 @@ $('buyLabel').addEventListener('click', () => {
   $('dispatchChip').textContent = 'Ready for handoff';
   $('dispatchChip').className = 'chip success';
   $('dispatchBtn').disabled = false;
-  advanceCustomerTo(2);
-  toast(`${state.opsRate.carrier} label purchased`);
+  $('opsStatus').textContent = 'Label created';
+  $('opsStatus').className = 'chip success';
+
+  advanceCustomerTo(1);
+  toast('Label purchased · tracking sent to customer');
 });
 
-$('printLabel').addEventListener('click', () => toast('4×6 label sent to demo printer'));
+$('printLabel').addEventListener('click', () => {
+  if (!state.labelBought) return;
+  toast('4×6 label sent to demo printer');
+});
 
 $('dispatchBtn').addEventListener('click', () => {
+  if (!state.labelBought || state.dispatched) return;
+
   state.dispatched = true;
   $('dispatchBtn').disabled = true;
   $('advanceTracking').disabled = false;
-  $('dispatchChip').textContent = 'In transit';
+  $('dispatchChip').textContent = 'Shipped';
   $('dispatchChip').className = 'chip success';
   $('queueStatus').textContent = 'Shipped';
   $('queueStatus').className = 'chip success';
-  $('opsStatus').textContent = 'In transit';
+  $('opsStatus').textContent = 'Shipped';
   $('opsStatus').className = 'chip success';
   $('openKpi').textContent = '0';
   $('readyKpi').textContent = '0';
   $('shippedKpi').textContent = '1';
-  advanceCustomerTo(3);
+
+  advanceCustomerTo(2);
   toast('Shipment handed to carrier');
 });
 
 $('advanceTracking').addEventListener('click', () => {
+  if (!state.dispatched) return;
   if (state.trackingIndex >= trackingStages.length - 1) return;
+
   advanceCustomerTo(state.trackingIndex + 1);
+
   if (state.trackingIndex === trackingStages.length - 1) {
     $('advanceTracking').disabled = true;
     $('dispatchChip').textContent = 'Delivered';
     $('currentScan').textContent = 'Delivered';
     $('opsStatus').textContent = 'Delivered';
+    $('queueStatus').textContent = 'Delivered';
     toast('Shipment delivered');
   } else {
-    toast('Tracking advanced');
+    toast(`Tracking updated · ${trackingStages[state.trackingIndex].status}`);
   }
 });
 
 function advanceCustomerTo(index) {
-  state.trackingIndex = index;
-  $('currentScan').textContent = trackingStages[index].status;
+  state.trackingIndex = Math.min(index, trackingStages.length - 1);
+  $('currentScan').textContent = trackingStages[state.trackingIndex].status;
   renderTracking();
 }
 
 function renderTracking() {
-  const stage = trackingStages[state.trackingIndex];
-  $('customerStatus').textContent = stage.status;
-  $('customerStatus').className = `chip ${stage.status === 'Requested' ? 'warning' : 'success'}`;
-  $('trackingTitle').textContent = stage.title;
-  $('trackingSubtitle').textContent = stage.subtitle;
-  $('trackingCarrier').textContent = state.opsRate
+  if (!state.requested) return;
+
+  const current = trackingStages[state.trackingIndex];
+  $('customerStatus').textContent = current.status;
+  $('customerStatus').className = `chip ${current.status === 'Packing' ? 'warning' : 'success'}`;
+  $('trackingTitle').textContent = current.title;
+  $('trackingSubtitle').textContent = current.subtitle;
+  $('trackingCarrier').textContent = state.opsRate && state.labelBought
     ? `${state.opsRate.carrier} · ${state.opsRate.service}`
     : 'Carrier being selected by fulfillment';
   $('trackingNumber').textContent = state.tracking || 'Pending';
-  $('snapStatus').textContent = stage.status;
-  $('trackingProgress').innerHTML = trackingStages.map((_, index) => `<div class="progress-step ${index <= state.trackingIndex ? 'done' : ''}"></div>`).join('');
-  $('trackingEvents').innerHTML = trackingStages.slice(0, state.trackingIndex + 1).reverse().map((event, index) => `
-    <div class="event">
-      <small>${index === 0 ? 'Latest update' : 'Earlier'}</small>
-      <div><strong>${event.event}</strong><br><small>${event.status === 'Delivered' ? 'Destination' : 'Toronto / carrier network'}</small></div>
-    </div>`).join('');
+  $('snapStatus').textContent = current.status;
+
+  $('trackingProgress').innerHTML = trackingStages.map((stage, index) => `
+    <div class="progress-step ${index <= state.trackingIndex ? 'done' : ''}" title="${stage.status}"></div>`).join('');
+
+  $('trackingEvents').innerHTML = trackingStages
+    .slice(0, state.trackingIndex + 1)
+    .reverse()
+    .map((stage, reverseIndex) => `
+      <div class="event">
+        <small>${reverseIndex === 0 ? 'Latest update' : 'Earlier'}</small>
+        <div>
+          <strong>${stage.event}</strong>
+          <small>${stage.status === 'Delivered' ? destinationLabel(state.address) : 'Toronto / carrier network'}</small>
+        </div>
+      </div>`).join('');
 }
 
 function trackingNumber(carrier) {
-  const prefix = { 'Chit Chats': 'CH', 'Canada Post': 'CP', 'Purolator': 'PUR', UPS: '1Z', FedEx: 'FDX', DHL: 'DHL' }[carrier] || 'TRK';
+  const prefix = {
+    'Chit Chats': 'CH',
+    'Canada Post': 'CP',
+    'Purolator': 'PUR',
+    'UPS': '1Z',
+    'FedEx': 'FDX',
+    'DHL': 'DHL'
+  }[carrier] || 'TRK';
   return prefix + Math.random().toString().slice(2, 14);
 }
 
 function destinationLabel(address) {
-  return address.country === 'CA' && String(address.city).toLowerCase().includes('toronto')
-    ? 'Toronto delivery'
-    : `${address.city}, ${countryName(address.country)}`;
+  if (!address) return 'Destination';
+  return `${address.city}, ${address.region} · ${countryName(address.country)}`;
 }
 
 function countryName(code) {
-  return { CA: 'Canada', US: 'United States', AE: 'United Arab Emirates', GB: 'United Kingdom', DE: 'Germany', FR: 'France', AU: 'Australia', JP: 'Japan' }[code] || code;
+  return {
+    CA: 'Canada',
+    US: 'United States',
+    AE: 'United Arab Emirates',
+    GB: 'United Kingdom',
+    DE: 'Germany',
+    FR: 'France',
+    AU: 'Australia',
+    JP: 'Japan'
+  }[code] || code;
 }
 
 function money(value) {
@@ -451,11 +544,12 @@ function money(value) {
 
 function signedMoney(value) {
   const number = Number(value);
-  return `${number >= 0 ? '+' : '−'}C$${Math.abs(number).toFixed(2)}`;
+  return `${number < 0 ? '-' : '+'}C$${Math.abs(number).toFixed(2)}`;
 }
 
 function toast(message) {
   $('toast').textContent = message;
   $('toast').classList.add('show');
-  window.setTimeout(() => $('toast').classList.remove('show'), 1800);
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => $('toast').classList.remove('show'), 1800);
 }
