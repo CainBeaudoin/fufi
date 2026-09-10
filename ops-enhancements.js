@@ -1,6 +1,34 @@
 (() => {
   const fmt = (v) => `C$${Number(v).toFixed(2)}`;
   const fastest = (rate) => Number((String(rate.days).match(/\d+/) || [99])[0]);
+  const BASE_OPEN = 5;
+  const BASE_READY = 2;
+  const BASE_SHIPPED = 18;
+
+  function setQueueCounts(open = BASE_OPEN, ready = BASE_READY, shipped = BASE_SHIPPED) {
+    $('openKpi').textContent = String(open);
+    $('readyKpi').textContent = String(ready);
+    $('shippedKpi').textContent = String(shipped);
+    const count = document.querySelector('.queue-section-label strong');
+    if (count) count.textContent = `${open} open`;
+  }
+
+  setQueueCounts();
+
+  const requestButton = $('requestShipment');
+  if (requestButton) requestButton.addEventListener('click', () => {
+    if (state.requested) setQueueCounts(BASE_OPEN + 1, BASE_READY, BASE_SHIPPED);
+  });
+
+  const verifyButton = $('verifyBtn');
+  if (verifyButton) verifyButton.addEventListener('click', () => {
+    if (state.requested) setQueueCounts(BASE_OPEN + 1, BASE_READY + 1, BASE_SHIPPED);
+  });
+
+  const dispatchButton = $('dispatchBtn');
+  if (dispatchButton) dispatchButton.addEventListener('click', () => {
+    if (state.dispatched) setQueueCounts(BASE_OPEN, BASE_READY, BASE_SHIPPED + 1);
+  });
 
   function recommendedRate(rates) {
     const paid = Number(state.customerCharge || 0);
@@ -34,7 +62,7 @@
           <div class="ops-price-stack"><b>${fmt(rate.price)}</b><span class="customer-paid-line">Customer paid ${fmt(paid)}</span><span class="margin-pill">${good ? `+${fmt(delta)} margin` : `${fmt(Math.abs(delta))} over`}</span></div>
         </button>`;
       }).join('')}
-      <p class="ops-rate-note">Recommendation is guidance only. Fulfillment can still choose any carrier.</p>`;
+      <p class="ops-rate-note">Recommendation is guidance only. Fulfillment can still choose any carrier based on speed, serviceability, insurance, packaging, or operational needs.</p>`;
 
     document.querySelectorAll('.ops-rate').forEach((btn) => btn.addEventListener('click', () => {
       document.querySelectorAll('.ops-rate').forEach((x) => x.classList.remove('selected'));
